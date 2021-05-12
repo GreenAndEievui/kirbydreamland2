@@ -27,6 +27,15 @@
 # url: http://www.vim.org/scripts/script.php?script_id=441
 .lvimrc
 
+# Visual Studio Code's directory
+/.vscode/
+
+# Any other compilation directories
+/bin/
+/obj/
+/dep/
+/res/
+
 # converted image data
 *.1bpp
 *.2bpp
