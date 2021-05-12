@@ -61,7 +61,7 @@ SECTION "timerInt", ROM0[$50]
 	push hl
 	push bc
 	push de
-	jp Unknown_0x0333
+	jp Timer
 
 UnknownData_0x0057:
 INCBIN "baserom.gb", $0057, $0058 - $0057
@@ -105,9 +105,9 @@ SECTION "Home", ROM0[$150]
 
 Start:
 	di
-	ld a, bank(ResetStackPointer) ;Bank 1A
+	ld a, bank(Initialize) ; Bank 1A
 	ld [MBC1RomBank],a
-	jp ResetStackPointer
+	jp Initialize
 
 VBlank:
 	ld a,[$FF00+$B5]
@@ -339,13 +339,13 @@ Unknown_0x0271:
 	ld [$DA0C],a
 
 Unknown_0x028A:
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,$00
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	call Unknown_0x2BFD
 	pop af
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	ld a,[$FF00+$FF]
 	or $01
 	ld [$FF00+$FF],a
@@ -443,7 +443,7 @@ Unknown_0x0318:
 UnknownData_0x0320:
 INCBIN "baserom.gb", $0320, $0333 - $0320
 
-Unknown_0x0333:
+Timer:
 	ld a,$01
 	ld [$DA0D],a
 	ld a,[$FF00+$40]
@@ -459,7 +459,7 @@ Unknown_0x0346:
 	di
 	bit 0,[hl]
 	jr nz,Unknown_0x034F
-	db $76;halt
+	halt
 	ei
 	jr Unknown_0x0346
 
@@ -599,7 +599,7 @@ Unknown_0x03FF:
 	ld e,$34
 	ld hl,$6002
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Start
 
 Unknown_0x041E:
@@ -635,10 +635,10 @@ Unknown_0x0437:
 	ld d,$01
 	ld hl,$5FEB
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$5DFF
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x0452:
 	ld a,$01
@@ -663,11 +663,11 @@ Unknown_0x046D:
 	call Unknown_0x0483
 	ld hl,$5DFF
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld d,$00
 	ld hl,$5FEB
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x0483:
@@ -927,72 +927,86 @@ Unknown_0x05BA:
 	jr Unknown_0x05AC
 
 Unknown_0x05BF:
-	ld [$FF00+$96],a
-	ld a,[$FF00+$A4]
+	ldh [hTemporaryBank], a
+	ldh a, [hCurrentROMBank]
 	push af
-	ld a,[$FF00+$96]
-	call ChangeBankNoInturrupts
-	call LoadDataToRamInit
+	ldh a, [hTemporaryBank]
+	call SwitchBank
+	call MemCopy
 	pop af
-	jr ChangeBankNoInturrupts
+	jr SwitchBank
 
-CallForeignBankNoInturrupts:
-	ld [$FF00+$96],a
-	ld a,[$FF00+$A4]
+; Calls a function stoared in a different bank.
+; @ a:  Target Bank
+; @ hl: Target Function
+FarCall:
+	ldh [hTemporaryBank], a
+	ldh a, [hCurrentROMBank]
 	push af
-	ld a,[$FF00+$96]
-	call ChangeBankNoInturrupts
+	ldh a, [hTemporaryBank]
+	call SwitchBank
 	call Unknown_0x0620
 	pop af
 
-ChangeBankNoInturrupts:
+; Switches the current ROM bank.
+; @ a:  Target Bank
+SwitchBank:
+	; HAL put their writes BACKWARDS, so switching can be broken by interrupts. 
+	; How do you solve that? Disable them, apparently...
 	di
 	ld [MBC1RomBank],a
-	ld [$FF00+$A4],a
+	ldh [hCurrentROMBank], a
+	; Oh my god at least use `reti`
 	ei
 	ret
 
-CallForeignBank:
-	;A is the bank being switched to
-	ld [$FF00+$96],a
-	ld a,[$FF00+$A4] ;The previous bank is stored
+; Faster version of `FarCall`. Only safe to use when interrupts are disabled.
+; @ a:  Target Bank
+; @ hl: Target Function
+FarCallUnsafe:
+	ldh [hTemporaryBank], a
+	ldh a, [hCurrentROMBank]
 	push af
-	ld a,[$FF00+$96]
-	call ChangeBankAndHRAM
+	ldh a, [hTemporaryBank]
+	call SwitchBankUnsafe
 	call Unknown_0x0620
 	pop af 
 
-ChangeBankAndHRAM:
-	;Changes the bank and saves the new bank to HRAM
+; Faster version of `SwitchBank`. Only safe to use when interrupts are disabled.
+; @ a:  Target Bank
+SwitchBankUnsafe:
+	; Unfortunatly this function isn't used often 
+	; because HAL put their writes backwards, which causes issues with interrupts...
 	ld [MBC1RomBank],a
-	ld [$FF00+$A4],a
+	ldh [hCurrentROMBank], a
 	ret
 
 Unknown_0x05F9:
 	di
-	ld a,l
-	ld [$DA11],a
-	ld a,h
-	ld [$DA12],a
+	ld a, l
+	ld [wHLBuffer], a
+	ld a, h
+	ld [wHLBuffer + 1], a
 	ei
 	ret
 
+; Stores `hl` to WRAM to be read later.
 StoreHLToRam:
-	ld a,l
-	ld [$DA11],a
-	ld a,h
-	ld [$DA12],a
+	ld a, l
+	ld [wHLBuffer], a
+	ld a, h
+	ld [wHLBuffer + 1], a
 	ret
 
 Unknown_0x060D:
-	ld [$FF00+$96],a
-	ld a,[$FF00+$A4]
+	ldh [hTemporaryBank], a
+	ldh a, [hCurrentROMBank]
 	push af
-	ld a,[$FF00+$96]
-	call ChangeBankNoInturrupts
+	ldh a, [hTemporaryBank]
+	call SwitchBank
 	call StoreDEToRAM
 	pop af
-	jr ChangeBankNoInturrupts
+	jr SwitchBank
 
 UnknownData_0x061D:
 INCBIN "baserom.gb", $061D, $0620 - $061D
@@ -1000,42 +1014,40 @@ INCBIN "baserom.gb", $061D, $0620 - $061D
 Unknown_0x0620:
 	jp hl
 
-LoadDataToRamInit:
-	;HL is the location of the Data being loaded
-	;DE is the destination for the data
-	;BC is the length of the data in bytes
+; Loads `bc` bytes from `hl` to `de`.
+; @ bc: Number of bytes to copy.
+; @ de: Destination.
+; @ hl: Source.
+MemCopy:
 	inc b
 	inc c
-	jr LoadDataToRamDec
-
-LoadDataToRam:
+	jr .decrement
+.loadByte
 	ld a,[hli]
 	ld [de],a
 	inc de
-
-LoadDataToRamDec:
+.decrement
 	dec c
-	jr nz,LoadDataToRam
+	jr nz, .loadByte
 	dec b
-	jr nz,LoadDataToRam
+	jr nz, .loadByte
 	ret
 
-LoadByteToRamInit:
-	;HL is the location data is being loaded to
-	;BC is the number of bytes to write to HL
-	;A is the byte being loaded.
+; Loads `a` to `hl` `bc` times.
+; @ a:  Source byte.
+; @ bc: Number of bytes to overwrite.
+; @ hl: Location to overwrite.
+MemSet:
 	inc b
 	inc c
-	jr LoadByteToRamDec
-
-LoadByteToRam:
+	jr .decrement
+.loadByte
 	ld [hli],a
-
-LoadByteToRamDec:
+.decrement
 	dec c
-	jr nz,LoadByteToRam
+	jr nz, .loadByte
 	dec b
-	jr nz,LoadByteToRam
+	jr nz, .loadByte
 	ret
 
 Unknown_0x063B:
@@ -1175,14 +1187,14 @@ Unknown_0x06EF:
 	inc e
 	ld a,e
 	ld [$DA34],a
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,$1E
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	ld e,h
 	call Unknown_0x7A00C
 	pop af
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	jr Unknown_0x06B8
 
 StoreDEToRAM:
@@ -1440,10 +1452,10 @@ Unknown_0x07FC:
 	ld [hl],a
 	ld l,$48
 	ld [hl],a
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	ld [$FF00+$84],a
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[de]
 	ld c,a
 	inc de
@@ -1453,7 +1465,7 @@ Unknown_0x07FC:
 	ld a,[de]
 	ld e,a
 	ld a,[$FF00+$84]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x0855
 	ret
 
@@ -1563,7 +1575,7 @@ Unknown_0x08BB:
 
 Unknown_0x08C6:
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[hli]
 	ld b,a
 	ld c,[hl]
@@ -1590,7 +1602,7 @@ Unknown_0x08D8:
 Unknown_0x08DE:
 	ld a,b
 	and $1F
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[hli]
 	ld b,a
 	ld a,[hli]
@@ -1743,7 +1755,7 @@ INCBIN "baserom.gb", $0968, $096C - $0968
 	ld e,a
 	ld a,[bc]
 	ld [de],a
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld b,h
 	ld c,l
 	jp Unknown_0x08CE
@@ -1925,7 +1937,7 @@ Unknown_0x0A65:
 	ld a,[bc]
 	inc bc
 	ld [de],a
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld h,d
 	ld l,$28
 	ld a,[hl]
@@ -1970,7 +1982,7 @@ Unknown_0x0A65:
 	ld e,a
 	ld a,[hli]
 	ld [de],a
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld e,$28
 	ld a,l
 	ld [de],a
@@ -2248,7 +2260,7 @@ Unknown_0x0C3A:
 	push hl
 	ld hl,$747D
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop hl
 	ret
 
@@ -2272,7 +2284,7 @@ Unknown_0x0C61:
 	ld l,$03
 	ld de,$DA4B
 	ld bc,$009B
-	call LoadDataToRamInit
+	call MemCopy
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
@@ -2281,7 +2293,7 @@ Unknown_0x0C71:
 	ld e,$03
 	ld hl,$DA4B
 	ld bc,$009B
-	call LoadDataToRamInit
+	call MemCopy
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
@@ -2612,7 +2624,7 @@ Unknown_0x0DC7:
 	rra
 	jr nc,Unknown_0x0DDE
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1F40A
 	jr Unknown_0x0DF0
 
@@ -2622,7 +2634,7 @@ Unknown_0x0DDE:
 	cp $00
 	jr nz,Unknown_0x0DF0
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x2F85B
 
 Unknown_0x0DF0:
@@ -2640,15 +2652,15 @@ Unknown_0x0DF6:
 	call Unknown_0x0E9D
 	jp Unknown_0x0F22
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x217AC
 	ret
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x213CB
 	ret
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x216A6
 	ret
 
@@ -2869,7 +2881,7 @@ Unknown_0x0F22:
 	ld h,d
 	ld l,$16
 	ld a,[hli]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[hli]
 	ld l,[hl]
 	ld h,a
@@ -3181,7 +3193,7 @@ Unknown_0x1099:
 	push bc
 	ld hl,Unknown_0x4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
@@ -3190,7 +3202,7 @@ Unknown_0x1099:
 Unknown_0x10AA:
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
@@ -3204,7 +3216,7 @@ Unknown_0x10B7:
 	push bc
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
@@ -3218,17 +3230,17 @@ INCBIN "baserom.gb", $10CD, $10DE - $10CD
 
 Unknown_0x10DE:
 	ld a, bank(Unknown_0x20062)
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	jp Unknown_0x20062
 	ld e,$09
 	ld hl,Unknown_0x602E
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x1126
 	call Unknown_0x1134
 	ld hl,$5B28
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DEDE
 	set 2,[hl]
 	set 1,[hl]
@@ -3253,50 +3265,50 @@ Unknown_0x111D:
 
 Unknown_0x1126:
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x2E8A0
 	ld de,$8000
 	jp StoreDEToRAM
 
 Unknown_0x1134:
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x2F122
 	ld de,$9630
 	call StoreDEToRAM
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x2F20F
 	ld de,$8800
 	call StoreDEToRAM
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x2ED87
 	ld de,$8600
 	call StoreDEToRAM
 	ret
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	jr Unknown_0x1196
 	ld hl,$747D
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$A051]
 	cp $0D
 	jr nz,Unknown_0x1183
 	ld a,$0B
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,$6980
 	ld de,$8000
 	jp StoreDEToRAM
 
 Unknown_0x1183:
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1F458
 	call Unknown_0x1196
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1F472
 
 Unknown_0x1196:
@@ -3327,8 +3339,8 @@ Unknown_0x1196:
 	ld b,[hl]
 	pop hl
 	ld a,[$FF00+$84]
-	call ChangeBankNoInturrupts
-	jp LoadDataToRamInit
+	call SwitchBank
+	jp MemCopy
 	xor a
 	ld [$A082],a
 	ld [$FF00+$A5],a
@@ -3345,18 +3357,18 @@ Unknown_0x11C6:
 Unknown_0x11D4:
 	call Unknown_0x086B
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C259
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C3CB
 	call Unknown_0x04AE
 	ld hl,Unknown_0x1DB85
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x1DBD2
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0343
 	call Unknown_0x0357
 	ld a,[$A082]
@@ -3385,7 +3397,7 @@ Unknown_0x1219:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld de,$A004
 	ld a,[de]
 	and $F0
@@ -3437,13 +3449,13 @@ Unknown_0x1267:
 	jr nz,Unknown_0x1279
 	ld hl,$4276
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jr Unknown_0x1281
 
 Unknown_0x1279:
 	ld hl,Unknown_0x20280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x1281:
 	call Unknown_0x0437
@@ -3543,7 +3555,7 @@ Unknown_0x12B8:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld bc,$0003
 	add hl,bc
 	push hl
@@ -3578,7 +3590,7 @@ Unknown_0x1320:
 	ld h,a
 	ld a,b
 	ld [$DB5A],a
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[hli]
 	cpl
 	inc a
@@ -3605,7 +3617,7 @@ Unknown_0x1320:
 	ld [$DB5C],a
 	call StoreDEToRAM
 	ld a,[$DB58]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop hl
 	push hl
 	ld bc,$0007
@@ -3614,7 +3626,7 @@ Unknown_0x1320:
 	ld a,$86
 	jr z,Unknown_0x1388
 	ld a,$0C
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x307D1
 	ld de,$8860
 	call StoreDEToRAM
@@ -3645,7 +3657,7 @@ Unknown_0x139E:
 
 Unknown_0x13A3:
 	ld a,[$DB58]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop hl
 	ld bc,$0003
 	add hl,bc
@@ -3658,7 +3670,7 @@ Unknown_0x13AE:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld de,$DB7F
 
 Unknown_0x13BD:
@@ -3682,7 +3694,7 @@ Unknown_0x13BD:
 	ld bc,$5629
 	add hl,bc
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[hli]
 	ld [de],a
 	inc de
@@ -3716,7 +3728,7 @@ Unknown_0x13BD:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$FF00+$84]
 	cp $11
 	jr nz,Unknown_0x141F
@@ -3747,7 +3759,7 @@ Unknown_0x143A:
 Unknown_0x143B:
 	pop hl
 	ld a,[$DB5D]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	jp Unknown_0x13BD
 
 Unknown_0x1445:
@@ -3793,7 +3805,7 @@ Unknown_0x1469:
 	ld hl,$BB00
 	ld bc,$0100
 	ld a,$00
-	call LoadByteToRamInit
+	call MemSet
 	xor a
 	ld hl,$DB4F
 	ld [hli],a
@@ -3831,7 +3843,7 @@ Unknown_0x1469:
 	ld hl,$CD56
 	ld bc,$0018
 	ld a,$00
-	call LoadByteToRamInit
+	call MemSet
 	xor a
 	ld [$DB72],a
 	ld [$DB70],a
@@ -3841,7 +3853,7 @@ Unknown_0x1469:
 UnknownData_0x14D0:
 INCBIN "baserom.gb", $14D0, $14EE - $14D0
 	ld a,[$DB5A]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$DB59]
 	bit 7,a
 	ld b,$90
@@ -3936,7 +3948,7 @@ Unknown_0x1563:
 
 Unknown_0x1564:
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$DB57]
 	ld l,a
 	ld h,$00
@@ -3953,7 +3965,7 @@ Unknown_0x1564:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ret
 
 Unknown_0x1584:
@@ -3973,13 +3985,13 @@ Unknown_0x1584:
 
 Unknown_0x1597:
 	ld [$FF00+$80],a
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C37B
 	pop af
-	jp ChangeBankNoInturrupts
+	jp SwitchBank
 
 Unknown_0x15A8:
 	ld [$FF00+$84],a
@@ -6829,13 +6841,13 @@ Unknown_0x2416:
 	ret
 
 Unknown_0x2422:
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,$10
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x2435
 	pop af
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
@@ -7910,7 +7922,7 @@ Unknown_0x2A3B:
 	push bc
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[bc]
 	inc bc
@@ -7919,7 +7931,7 @@ Unknown_0x2A3B:
 	ld a,[bc]
 	inc bc
 	push bc
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop bc
 	ld a,[bc]
 	ld l,a
@@ -7934,7 +7946,7 @@ Unknown_0x2A3B:
 	ld a,[bc]
 	inc bc
 	push bc
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop bc
 	ld a,[bc]
 	ld l,a
@@ -7949,7 +7961,7 @@ Unknown_0x2A3B:
 	ld a,[bc]
 	inc bc
 	push bc
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop bc
 	ld a,[bc]
 	ld l,a
@@ -7964,7 +7976,7 @@ Unknown_0x2A3B:
 	ld [$FF00+$40],a
 	call Unknown_0x046D
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x20000
 	pop bc
 	ld a,[bc]
@@ -7978,14 +7990,14 @@ Unknown_0x2A3B:
 	pop de
 	ld hl,$6011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DD2E]
 	add a,$03
 	ld d,a
 	ld e,$04
 	ld hl,$4246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x2AC4:
 	call Unknown_0x0496
@@ -8006,11 +8018,11 @@ Unknown_0x2ADC:
 	ld e,$04
 	ld hl,Unknown_0x6C27B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld hl,Unknown_0x6DADA
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x2AF8:
@@ -8066,7 +8078,7 @@ Unknown_0x2B13:
 	push hl
 	push bc
 	push de
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	ld [$DD34],a
 	ld [$DD32],sp
 	ld hl,$DA14
@@ -8076,7 +8088,7 @@ Unknown_0x2B13:
 	ld a,$80
 	ld [$FF00+$45],a
 	ld a,[$DD37]
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	ld sp,$DD35
 	pop hl
 	ld sp,hl
@@ -8085,13 +8097,13 @@ Unknown_0x2B13:
 	push hl
 	push bc
 	push de
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	ld [$DD37],a
 	ld [$DD35],sp
 
 Unknown_0x2B83:
 	ld a,[$DD34]
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	ld sp,$DD32
 	pop hl
 	ld sp,hl
@@ -8167,7 +8179,7 @@ INCBIN "baserom.gb", $2BF5, $2BFD - $2BF5
 
 Unknown_0x2BFD:
 	ld a,$1F
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 	ld b,$07
 
 Unknown_0x2C04:
@@ -8227,7 +8239,7 @@ Unknown_0x2C48:
 	cp b
 	jr nz,Unknown_0x2C52
 	ld a,$1E
-	call ChangeBankAndHRAM
+	call SwitchBankUnsafe
 
 Unknown_0x2C52:
 	dec b
@@ -9205,7 +9217,7 @@ Unknown_0x310F:
 	ld e,$21
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$A084
 	ld a,[hl]
 	cp $99
@@ -9356,10 +9368,10 @@ Unknown_0x31CD:
 	rl h
 	sla l
 	rl h
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld de,Unknown_0x1D7DC
 	add hl,de
 	ld d,$40
@@ -9371,7 +9383,7 @@ Unknown_0x31F4:
 	dec d
 	jr nz,Unknown_0x31F4
 	pop af
-	jp ChangeBankNoInturrupts
+	jp SwitchBank
 
 UnknownData_0x31FE:
 INCBIN "baserom.gb", $31FE, $3212 - $31FE
@@ -9387,9 +9399,9 @@ INCBIN "baserom.gb", $31FE, $3212 - $31FE
 	ld e,$15
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$0F
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x3C983
 	ld de,$8000
 	call StoreDEToRAM
@@ -9408,7 +9420,7 @@ Unknown_0x3250:
 	ld a,[bc]
 	inc bc
 	push bc
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop bc
 	ld a,[bc]
 	ld l,a
@@ -9433,7 +9445,7 @@ Unknown_0x3250:
 
 Unknown_0x3276:
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x20000
 	ld a,$92
 	ld [$DB5E],a
@@ -9444,11 +9456,11 @@ Unknown_0x3276:
 	call Unknown_0x07C4
 	ld a,$0A
 	ld [$DB58],a
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x2B81C
 	call Unknown_0x1289
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C1DC
 	ld a,$67
 	ld [$FF00+$40],a
@@ -9456,24 +9468,24 @@ Unknown_0x3276:
 	ld e,$04
 	ld hl,$424E
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x32B8:
 	call Unknown_0x0496
 	call Unknown_0x086B
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C259
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C3CB
 	call Unknown_0x04AE
 	ld hl,Unknown_0x1DB85
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x1DBD2
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0343
 	ld hl,$DD2D
 	ld a,[hl]
@@ -9487,7 +9499,7 @@ Unknown_0x32F1:
 	ld e,$04
 	ld hl,$4280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ret
 	ld a,$FF
@@ -9505,19 +9517,19 @@ Unknown_0x32F1:
 	ld e,$1C
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$47
 	ld [$FF00+$40],a
 	ld a,$0F
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x3C000
 	ld de,$8000
 	call StoreDEToRAM
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x20000
 	ld a,$0F
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,$6111
 	ld a,[$DB60]
 	add a,a
@@ -9544,27 +9556,27 @@ Unknown_0x3353:
 	call Unknown_0x3467
 	call Unknown_0x3492
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C1DC
 	call Unknown_0x046D
 	ld a,[$DB60]
 	ld e,a
 	ld hl,$6011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DB60]
 	add a,$1B
 	ld d,a
 	ld e,$04
 	ld hl,$4246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x3396:
 	call Unknown_0x0496
 	call Unknown_0x086B
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x1C259
 	call Unknown_0x04AE
 	call Unknown_0x0343
@@ -9583,7 +9595,7 @@ Unknown_0x33B7:
 	ld e,$04
 	ld hl,$427B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ret
 
@@ -9646,7 +9658,7 @@ Unknown_0x33F5:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld bc,$0003
 	add hl,bc
 	push hl
@@ -9680,7 +9692,7 @@ Unknown_0x3437:
 	ld l,[hl]
 	ld h,a
 	ld a,b
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	inc hl
 	xor a
 	ld [$DB59],a
@@ -9740,7 +9752,7 @@ Unknown_0x3492:
 
 Unknown_0x34A3:
 	ld a,$0F
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$DB6A]
 	and $7F
 	ld b,$00
@@ -9769,7 +9781,7 @@ Unknown_0x34C1:
 	ld a,[hl]
 	ld h,b
 	ld l,c
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ret
 
 Unknown_0x34CC:
@@ -9814,10 +9826,10 @@ Unknown_0x34E9:
 	ret
 
 Unknown_0x34FD:
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push af
 	ld a,[$A069]
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld h,d
 	ld l,$6A
 	ld a,[hli]
@@ -9897,22 +9909,22 @@ Unknown_0x3547:
 
 Unknown_0x3563:
 	pop af
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ret
 	ld a,[bc]
 	ld [$DF11],a
 	inc bc
 	ld hl,Unknown_0x6B48B
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld hl,$7452
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld hl,Unknown_0x746C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld a,[$A071]
 	or a
@@ -10267,7 +10279,7 @@ Unknown_0x372C:
 	ld e,$28
 	ld hl,Unknown_0x4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	scf
@@ -10437,7 +10449,7 @@ Unknown_0x37F4:
 
 Unknown_0x37F7:
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	jp Unknown_0x23358
 	ld e,$45
 	ld a,[de]
@@ -11202,7 +11214,7 @@ Unknown_0x3BCD:
 Unknown_0x3BE6:
 	ld hl,Unknown_0x4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	pop bc
 	scf
@@ -11340,14 +11352,14 @@ Unknown_0x3C72:
 	ld e,$61
 	ld hl,Unknown_0x4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$18
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x62B11
 	ld de,$9000
 	call StoreDEToRAM
 	ld a,$18
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x6249F
 	ld de,$8000
 	call StoreDEToRAM
@@ -11371,14 +11383,14 @@ Unknown_0x3CD2:
 	jr nz,Unknown_0x3CD2
 	ld [$DF34],a
 	ld a,$18
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld hl,Unknown_0x62D6B
 	ld de,$9800
 	call StoreDEToRAM
 	ld hl,$9960
 	ld de,$9C00
 	ld bc,$00E0
-	call LoadDataToRamInit
+	call MemCopy
 	ld hl,$DF35
 	ld a,$32
 	ld [hli],a
@@ -11388,14 +11400,14 @@ Unknown_0x3CD2:
 	ld [hl],a
 	ld hl,Unknown_0x61B1B
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x046D
 	ld e,$1D
 	ld hl,Unknown_0x62011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$08
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	call Unknown_0x20000
 	ld a,$8B
 	ld h,$A0
@@ -11408,7 +11420,7 @@ Unknown_0x3CD2:
 	ld de,$0C04
 	ld hl,$4246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x3D36:
 	call Unknown_0x0496
@@ -11426,11 +11438,11 @@ Unknown_0x3D4E:
 	ld de,$0C04
 	ld hl,Unknown_0x6027B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld hl,Unknown_0x61ADA
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3D65:
@@ -11446,12 +11458,12 @@ Unknown_0x3D65:
 	ld a,[hli]
 	ld [$DD2F],a
 	ld [$DF39],a
-	ld a,[$FF00+$A4]
+	ldh a, [hCurrentROMBank]
 	push hl
 	push af
 	push de
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld a,[$DF39]
 	ld l,a
 	ld h,$00
@@ -11476,7 +11488,7 @@ Unknown_0x3D65:
 	ld a,[$DF34]
 	ld [de],a
 	pop af
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	pop hl
 	ld bc,$DF35
 	ld a,l
@@ -11486,7 +11498,7 @@ Unknown_0x3D65:
 	ld [bc],a
 	ld hl,Unknown_0x61A1C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3DB8:

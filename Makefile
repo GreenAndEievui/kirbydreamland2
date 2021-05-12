@@ -30,7 +30,8 @@ BASE := $(SRCDIR)/baserom.gb
 # Argument constants
 INCDIRS  = $(SRCDIR)/ $(SRCDIR)/include/
 WARNINGS = all extra
-ASFLAGS  = $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
+ASFLAGS  = -h $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
+LDFLAGS  = -d
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS =  $(wildcard $(SRCDIR)/main.asm)

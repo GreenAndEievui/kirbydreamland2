@@ -4,7 +4,7 @@ UnknownData_0x4000:
 INCBIN "baserom.gb", $4000, $4027 - $4000
 	ld hl,$79F4
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x4030:
@@ -98,7 +98,7 @@ INCBIN "baserom.gb", $418E, $4191 - $418E
 	push bc
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	pop bc
@@ -113,10 +113,10 @@ INCBIN "baserom.gb", $41B2, $41EA - $41B2
 	ld [de],a
 	ld hl,$6FB9
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$741F
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x4207:
@@ -138,7 +138,7 @@ Unknown_0x4231:
 	push bc
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
@@ -146,7 +146,7 @@ Unknown_0x4231:
 	push bc
 	ld hl,$47CE
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
@@ -159,7 +159,7 @@ Unknown_0x4299:
 INCBIN "baserom.gb", $4299, $446E - $4299
 	ld hl,$470E
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	xor a
 	ld [$DB3C],a
@@ -209,7 +209,7 @@ Unknown_0x4496:
 	call Unknown_0x0DA4
 	ld hl,Unknown_0x741F
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x44BF:
@@ -220,7 +220,7 @@ INCBIN "baserom.gb", $44BF, $4508 - $44BF
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -285,7 +285,7 @@ INCBIN "baserom.gb", $4583, $45E4 - $4583
 Unknown_0x45EA:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x4602
@@ -401,7 +401,7 @@ Unknown_0x46E1:
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -453,7 +453,7 @@ INCBIN "baserom.gb", $4742, $478C - $4742
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A8C
 	call Unknown_0x3992
@@ -522,7 +522,7 @@ INCBIN "baserom.gb", $480E, $481B - $480E
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x48B6
 	ld a,$01
 	call Unknown_0x3AAA
@@ -596,7 +596,7 @@ INCBIN "baserom.gb", $48B6, $4967 - $48B6
 	call Unknown_0x0D23
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -643,7 +643,7 @@ INCBIN "baserom.gb", $49C1, $49D4 - $49C1
 	call Unknown_0x0D35
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -660,7 +660,7 @@ INCBIN "baserom.gb", $49FA, $4A07 - $49FA
 	call Unknown_0x7C2E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -696,7 +696,7 @@ INCBIN "baserom.gb", $4A48, $4A5D - $4A48
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -719,7 +719,7 @@ INCBIN "baserom.gb", $4A87, $4A9D - $4A87
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -757,7 +757,7 @@ INCBIN "baserom.gb", $4AEA, $4AFA - $4AEA
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -802,7 +802,7 @@ INCBIN "baserom.gb", $4B55, $4BD6 - $4B55
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -822,7 +822,7 @@ INCBIN "baserom.gb", $4C05, $4C28 - $4C05
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -870,7 +870,7 @@ INCBIN "baserom.gb", $4C81, $4CC4 - $4C81
 	call Unknown_0x7C8E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x4CE5
@@ -941,7 +941,7 @@ INCBIN "baserom.gb", $4D46, $4D87 - $4D46
 	call Unknown_0x7CCA
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1064,7 +1064,7 @@ INCBIN "baserom.gb", $4F4D, $500C - $4F4D
 	call Unknown_0x507A
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1086,7 +1086,7 @@ Unknown_0x503A:
 	call Unknown_0x7A42
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1137,7 +1137,7 @@ INCBIN "baserom.gb", $508D, $5105 - $508D
 	call Unknown_0x507A
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -1187,11 +1187,11 @@ INCBIN "baserom.gb", $526C, $52C9 - $526C
 	jp Unknown_0x37F7
 	ld hl,$7EA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x37F7
 	ld hl,$7EA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$7C
 	ld a,[de]
 	or a
@@ -1204,11 +1204,11 @@ Unknown_0x52FD:
 	jp Unknown_0x37F7
 	ld hl,$7EE2
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x37F7
 	ld hl,Unknown_0x7F1C
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x37F7
 	ld e,$44
 	ld a,[de]
@@ -1328,21 +1328,21 @@ INCBIN "baserom.gb", $54A9, $54AC - $54A9
 	ld [$A080],a
 	ld hl,$4DA9
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x54C7:
 INCBIN "baserom.gb", $54C7, $54E3 - $54C7
 	ld hl,$79F4
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x54EC:
 INCBIN "baserom.gb", $54EC, $5525 - $54EC
 	ld hl,$4DF5
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,e
 	or a
 	ret z
@@ -1416,7 +1416,7 @@ INCBIN "baserom.gb", $5631, $5677 - $5631
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -1487,7 +1487,7 @@ INCBIN "baserom.gb", $56FE, $575F - $56FE
 Unknown_0x5765:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x577D
@@ -1609,7 +1609,7 @@ Unknown_0x5868:
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1660,7 +1660,7 @@ INCBIN "baserom.gb", $58C8, $590F - $58C8
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A8C
 	call Unknown_0x3992
@@ -1739,7 +1739,7 @@ INCBIN "baserom.gb", $59AA, $59B7 - $59AA
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x5A4B
 	ld a,$01
 	call Unknown_0x3AAA
@@ -1814,7 +1814,7 @@ INCBIN "baserom.gb", $5A4B, $5A5A - $5A4B
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A8C
 	call Unknown_0x3992
@@ -1891,7 +1891,7 @@ INCBIN "baserom.gb", $5AEF, $5B08 - $5AEF
 	call Unknown_0x0D23
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1938,7 +1938,7 @@ INCBIN "baserom.gb", $5B62, $5B75 - $5B62
 	call Unknown_0x0D35
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -1955,7 +1955,7 @@ INCBIN "baserom.gb", $5B9B, $5BA8 - $5B9B
 	call Unknown_0x7C2E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x7ADB
@@ -1991,7 +1991,7 @@ INCBIN "baserom.gb", $5BE9, $5BFE - $5BE9
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2014,7 +2014,7 @@ INCBIN "baserom.gb", $5C28, $5C3E - $5C28
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2052,7 +2052,7 @@ INCBIN "baserom.gb", $5C8B, $5C9B - $5C8B
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2098,7 +2098,7 @@ INCBIN "baserom.gb", $5CF6, $5D09 - $5CF6
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2135,7 +2135,7 @@ INCBIN "baserom.gb", $5D56, $5D77 - $5D56
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2155,7 +2155,7 @@ INCBIN "baserom.gb", $5DA6, $5DC9 - $5DA6
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -2209,7 +2209,7 @@ INCBIN "baserom.gb", $5E2E, $5E71 - $5E2E
 	call Unknown_0x7C8E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x5E92
@@ -2286,7 +2286,7 @@ INCBIN "baserom.gb", $5EFF, $5F40 - $5EFF
 	call Unknown_0x7CCA
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -2343,7 +2343,7 @@ INCBIN "baserom.gb", $602E, $6095 - $602E
 	ld [$A05D],a
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2379,7 +2379,7 @@ Unknown_0x60DB:
 Unknown_0x60DE:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x611A
 	ld a,$04
 	call Unknown_0x3AAA
@@ -2420,7 +2420,7 @@ Unknown_0x612F:
 	call Unknown_0x0D04
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -2437,7 +2437,7 @@ INCBIN "baserom.gb", $6154, $6196 - $6154
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -2510,7 +2510,7 @@ INCBIN "baserom.gb", $6221, $6282 - $6221
 Unknown_0x6288:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x62A0
@@ -2634,7 +2634,7 @@ Unknown_0x638C:
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -2687,7 +2687,7 @@ INCBIN "baserom.gb", $63F0, $6435 - $63F0
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A8C
 	call Unknown_0x3992
@@ -2790,7 +2790,7 @@ INCBIN "baserom.gb", $64EC, $6510 - $64EC
 	call Unknown_0x659A
 	ld hl,$6E0C
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3943
@@ -2887,7 +2887,7 @@ INCBIN "baserom.gb", $65B6, $65C3 - $65B6
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x6665
 	ld a,$01
 	call Unknown_0x3AAA
@@ -2968,7 +2968,7 @@ INCBIN "baserom.gb", $6665, $6723 - $6665
 	call Unknown_0x0D23
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -3015,7 +3015,7 @@ INCBIN "baserom.gb", $677D, $6790 - $677D
 	call Unknown_0x0D35
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -3033,7 +3033,7 @@ INCBIN "baserom.gb", $67B9, $67C6 - $67B9
 	call Unknown_0x7C2E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -3093,7 +3093,7 @@ INCBIN "baserom.gb", $6875, $688A - $6875
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -3117,7 +3117,7 @@ INCBIN "baserom.gb", $68B7, $68CD - $68B7
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -3156,7 +3156,7 @@ INCBIN "baserom.gb", $691D, $692D - $691D
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -3202,7 +3202,7 @@ INCBIN "baserom.gb", $698B, $6A0F - $698B
 	call Unknown_0x7CC1
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -3223,7 +3223,7 @@ INCBIN "baserom.gb", $6A41, $6A5A - $6A41
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -3279,7 +3279,7 @@ INCBIN "baserom.gb", $6AC3, $6AFF - $6AC3
 	call Unknown_0x7C8E
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x6B20
@@ -3358,7 +3358,7 @@ INCBIN "baserom.gb", $6B91, $6BBC - $6B91
 	call Unknown_0x7CCA
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -3440,7 +3440,7 @@ INCBIN "baserom.gb", $6C51, $6D53 - $6C51
 	ld [$A05D],a
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -3469,7 +3469,7 @@ Unknown_0x6D94:
 	call Unknown_0x0D04
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x6DCF
 	call Unknown_0x7B09
 	call Unknown_0x391F
@@ -3543,7 +3543,7 @@ Unknown_0x6E2F:
 	call Unknown_0x7BC7
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$04
 	ld [$A05D],a
 	ld e,$0D
@@ -3803,7 +3803,7 @@ Unknown_0x7120:
 Unknown_0x7133:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x3650
 	jr nc,Unknown_0x7148
 	ld e,$01
@@ -3828,7 +3828,7 @@ INCBIN "baserom.gb", $7158, $71C9 - $7158
 	call Unknown_0x0D04
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$15
 	ld a,[de]
 	cp $02
@@ -4171,7 +4171,7 @@ INCBIN "baserom.gb", $741F, $743B - $741F
 	call Unknown_0x7C45
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -4212,7 +4212,7 @@ INCBIN "baserom.gb", $74AA, $74B0 - $74AA
 	call Unknown_0x3602
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x3924
 	call Unknown_0x7ADB
@@ -4277,7 +4277,7 @@ INCBIN "baserom.gb", $7525, $7567 - $7525
 Unknown_0x756D:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x7A9E
 	jr nc,Unknown_0x7585
@@ -4386,7 +4386,7 @@ Unknown_0x7654:
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -4429,7 +4429,7 @@ INCBIN "baserom.gb", $76A8, $76B5 - $76A8
 	call Unknown_0x7CB8
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3992
@@ -4487,7 +4487,7 @@ Unknown_0x7758:
 	call Unknown_0x7A42
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977
@@ -4557,7 +4557,7 @@ Unknown_0x7A1B:
 	call Unknown_0x7A42
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x7B09
 	call Unknown_0x391F
 	call Unknown_0x3977

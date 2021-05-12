@@ -1346,7 +1346,7 @@ UnknownData_0x19661:
 INCBIN "baserom.gb", $19661, $1966F - $19661
 	ld hl,$4CE4
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x19678:
@@ -1627,7 +1627,7 @@ INCBIN "baserom.gb", $19C11, $19C50 - $19C11
 	ld e,$0E
 	ld hl,Unknown_0x18299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$06
@@ -1644,7 +1644,7 @@ INCBIN "baserom.gb", $19C11, $19C50 - $19C11
 	ld e,$0E
 	ld hl,Unknown_0x18299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$06

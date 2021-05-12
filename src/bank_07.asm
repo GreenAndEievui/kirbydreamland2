@@ -54,7 +54,7 @@ Unknown_0x1C0F9:
 	ld e,a
 	ld hl,$6002
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld a,[$DB61]
 	cp $08
@@ -70,7 +70,7 @@ Unknown_0x1C117:
 	ld e,[hl]
 	ld hl,$606D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x1C120:
 	ret
@@ -175,7 +175,7 @@ Unknown_0x1C1AC:
 Unknown_0x1C1AD:
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x1C1B5:
 	ret
@@ -1506,7 +1506,7 @@ Unknown_0x1CDEA:
 	ld e,$2E
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$07
@@ -1533,7 +1533,7 @@ Unknown_0x1CE32:
 	ld e,$2E
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$07
@@ -1552,7 +1552,7 @@ INCBIN "baserom.gb", $1CE4D, $1CE85 - $1CE4D
 	ld e,$26
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$07
@@ -1682,7 +1682,7 @@ INCBIN "baserom.gb", $1D08E, $1D0B0 - $1D08E
 	ld e,$0E
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld h,d
@@ -2345,11 +2345,11 @@ INCBIN "baserom.gb", $1D7DC, $1DA1C - $1D7DC
 	ld hl,$8FF0
 	ld bc,$0010
 	ld a,$FF
-	call LoadByteToRamInit
+	call MemSet
 	ld hl,$9C00
 	ld bc,$0400
 	ld a,$FF
-	call LoadByteToRamInit
+	call MemSet
 	ld a,$47
 	ld [$FF00+$40],a
 	ret
@@ -2476,7 +2476,7 @@ Unknown_0x1DBC4:
 	ld h,a
 	inc e
 	ld a,[de]
-	jp CallForeignBankNoInturrupts
+	jp FarCall
 
 UnknownData_0x1DBD1:
 INCBIN "baserom.gb", $1DBD1, $1DBD2 - $1DBD1
@@ -2825,7 +2825,7 @@ Unknown_0x1DD83:
 	ld e,$12
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x1DD91:
@@ -2859,7 +2859,7 @@ Unknown_0x1DDAD:
 	ld e,$12
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x1DDBB:
@@ -2915,7 +2915,7 @@ Unknown_0x1DDF8:
 	ld e,$12
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x1DE06:
@@ -3096,7 +3096,7 @@ Unknown_0x1DEC8:
 	sla l
 	rl h
 	ld a,$07
-	call ChangeBankNoInturrupts
+	call SwitchBank
 	ld de,$57DC
 	add hl,de
 	ld d,$40
@@ -3269,7 +3269,7 @@ Unknown_0x1DFE2:
 	ld hl,$8000
 	ld de,$9000
 	ld bc,$0800
-	call LoadDataToRamInit
+	call MemCopy
 	ld hl,Unknown_0x1E97D
 	ld de,$9800
 	call StoreDEToRAM
@@ -3289,7 +3289,7 @@ Unknown_0x1DFE2:
 	call Unknown_0x05BF
 	ld hl,$4000
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$F8
 	ld hl,$A0B3
 	call Unknown_0x07C4
@@ -3305,11 +3305,11 @@ Unknown_0x1DFE2:
 	ld e,$FF
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$06
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x1584
 	ld a,$47
 	ld [$FF00+$40],a
@@ -3317,15 +3317,15 @@ Unknown_0x1DFE2:
 	ld e,$08
 	ld hl,$6011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld de,$0004
 	ld hl,$4246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$06
 	ld hl,$606D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$20
 
 Unknown_0x1E09A:
@@ -3333,7 +3333,7 @@ Unknown_0x1E09A:
 	call Unknown_0x0496
 	ld hl,$086B
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x04AE
 	call Unknown_0x0343
 	call Unknown_0x0357
@@ -3345,7 +3345,7 @@ Unknown_0x1E0B3:
 	call Unknown_0x0496
 	ld hl,$086B
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0647
 	call Unknown_0x04AE
 	call Unknown_0x0343
@@ -3364,7 +3364,7 @@ Unknown_0x1E0B3:
 	jr nz,Unknown_0x1E0B3
 	ld hl,$5E92
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jr Unknown_0x1E0EF
 
 Unknown_0x1E0E8:
@@ -3376,11 +3376,11 @@ Unknown_0x1E0EF:
 	ld e,$00
 	ld hl,$606D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld de,$0004
 	ld hl,$427B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x0437
 
 Unknown_0x1E107:
@@ -3403,7 +3403,7 @@ Unknown_0x1EB09:
 	ret
 	ld hl,Unknown_0x1FEA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	ld e,$3A
@@ -3424,7 +3424,7 @@ UnknownData_0x1EB30:
 INCBIN "baserom.gb", $1EB30, $1EB5D - $1EB30
 	ld hl,Unknown_0x1FEA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	ld e,$15
@@ -3460,7 +3460,7 @@ INCBIN "baserom.gb", $1EB94, $1EBC2 - $1EB94
 	ret
 	ld hl,Unknown_0x1FEA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	jp Unknown_0x37F7
@@ -3482,7 +3482,7 @@ UnknownData_0x1EC06:
 INCBIN "baserom.gb", $1EC06, $1EC14 - $1EC06
 	ld hl,Unknown_0x1FEA8
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	ld e,$15
@@ -3521,7 +3521,7 @@ Unknown_0x1EC52:
 INCBIN "baserom.gb", $1EC52, $1EC77 - $1EC52
 	ld hl,$7EE2
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x1EC88
 	call Unknown_0x37A8
 	jp Unknown_0x37F7
@@ -3539,10 +3539,10 @@ UnknownData_0x1EC92:
 INCBIN "baserom.gb", $1EC92, $1ECA6 - $1EC92
 	ld hl,$7EE2
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$581E
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x3765
 	jr nc,Unknown_0x1ECC3
 	ld e,$02
@@ -3566,7 +3566,7 @@ Unknown_0x1ED18:
 INCBIN "baserom.gb", $1ED18, $1ED20 - $1ED18
 	ld hl,$7EE2
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x1EC88
 	call Unknown_0x37A8
 	ld e,$15
@@ -3611,7 +3611,7 @@ INCBIN "baserom.gb", $1ED57, $1ED73 - $1ED57
 	ret
 	ld hl,$7EE2
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x3765
 	jr nc,Unknown_0x1EDA2
 	ld e,$02
@@ -3632,7 +3632,7 @@ UnknownData_0x1EDB2:
 INCBIN "baserom.gb", $1EDB2, $1EDDE - $1EDB2
 	ld hl,Unknown_0x1FF1C
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	jp Unknown_0x37F7
@@ -3641,10 +3641,10 @@ UnknownData_0x1EDEF:
 INCBIN "baserom.gb", $1EDEF, $1EE13 - $1EDEF
 	ld hl,Unknown_0x1FF1C
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x1ED18
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x378B
 	call Unknown_0x37A8
 	jp Unknown_0x37F7
@@ -3653,7 +3653,7 @@ UnknownData_0x1EE2C:
 INCBIN "baserom.gb", $1EE2C, $1EE80 - $1EE2C
 	ld hl,Unknown_0x1FF1C
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$03
 	ld hl,Unknown_0x1EEA9
 	call Unknown_0x3AAA
@@ -3716,11 +3716,11 @@ UnknownData_0x1F1AF:
 INCBIN "baserom.gb", $1F1AF, $1F279 - $1F1AF
 	ld hl,$5CCF
 	ld a,$02
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld hl,$6D73
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x1F28B:

@@ -28,7 +28,7 @@ Unknown_0x1429A:
 INCBIN "baserom.gb", $1429A, $142B9 - $1429A
 	ld hl,$4CE4
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x142C2:
@@ -235,7 +235,7 @@ Unknown_0x145B1:
 	ld e,$22
 	ld hl,Unknown_0x14299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$27
@@ -378,7 +378,7 @@ Unknown_0x146A9:
 	ld e,$22
 	ld hl,Unknown_0x14299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$27

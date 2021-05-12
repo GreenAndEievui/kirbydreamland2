@@ -6,11 +6,11 @@ UnknownForeignCall_0x78232:
 	ld hl,Unknown_0x7846E
 	ld de,$DDE5
 	ld bc,$0030
-	call LoadDataToRamInit
+	call MemCopy
 	ld hl,Unknown_0x79B6F
 	ld de,$DE15
 	ld bc,$00C6
-	call LoadDataToRamInit
+	call MemCopy
 	ld a,$80
 	ld [$FF00+$26],a
 	ld a,$77
@@ -34,7 +34,7 @@ Unknown_0x78268:
 	ld e,$FF
 	ld a,$1F
 	ld hl,$4232
-	call CallForeignBank
+	call FarCallUnsafe
 	ld e,$FF
 	call Unknown_0x78299
 	call Unknown_0x78387
@@ -574,7 +574,7 @@ INCBIN "baserom.gb", $79EE8, $79F68 - $79EE8
 	xor a
 	ld hl,$DEEE
 	ld bc,$0010
-	call LoadByteToRamInit
+	call MemSet
 	call Unknown_0x79DF3
 	ld d,$03
 	call Unknown_0x79FEB
@@ -596,7 +596,7 @@ INCBIN "baserom.gb", $79EE8, $79F68 - $79EE8
 	inc hl
 	xor a
 	ld bc,$000E
-	call LoadByteToRamInit
+	call MemSet
 	ld hl,Unknown_0x7A0D7
 	ld de,$DEEE
 	call Unknown_0x79E8C
@@ -608,7 +608,7 @@ INCBIN "baserom.gb", $79EE8, $79F68 - $79EE8
 	inc hl
 	xor a
 	ld bc,$000E
-	call LoadByteToRamInit
+	call MemSet
 	ld hl,Unknown_0x7AB24
 	ld de,$DEEE
 	call Unknown_0x79E8C
@@ -703,7 +703,7 @@ Unknown_0x7A051:
 	ld [hli],a
 	xor a
 	ld bc,$0006
-	call LoadByteToRamInit
+	call MemSet
 	ld hl,$DEEE
 	call Unknown_0x79DBD
 	xor a

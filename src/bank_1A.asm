@@ -1,106 +1,122 @@
 SECTION "Bank1A", ROMX, BANK[$1A]
 
-ResetStackPointer:
-	ld sp,$FFFF
+Initialize:
+	ld sp, $FFFF
+.waitVBlank
+	; Wait for VBlank & turn off the screen
+	ldh a, [rLY] 
+	cp a, SCRN_Y + 1
+	jr nz, .waitVBlank
+	
+	xor a, a 
+	ldh [rLCDC], a
 
-InitializeGameboy:
-	ld a,[rLY] ;Wait for VBlank
-	cp $91
-	jr nz,InitializeGameboy
-	xor a ;Resets all LCDC flags
-	ld [rLCDC],a 
-	ld a,CART_RAM_ENABLE
-	ld [MBC1RamEnable],a
-	ld hl,$8000
-	ld bc,$2000
-	ld a,$00 ;not sure why they didn't use `xor a`?
-	call LoadByteToRamInit
-	ld hl,$C000
-	ld bc,$2000
-	ld a,$00
-	call LoadByteToRamInit
-	ld sp,$E000
-	ld hl,$FE00
-	ld bc,$0100
-	ld a,$00
-	call LoadByteToRamInit
-	ld hl,$FF80
-	ld bc,$007F
-	ld a,$00
-	call LoadByteToRamInit
-	ld hl,$A000
-	ld bc,$1C00
-	ld a,$00
-	call LoadByteToRamInit
-	xor a
-	ld [rIF],a 
+	ld a, CART_SRAM_ENABLE
+	ld [MBC1RamEnable], a
+
+	; Zero-out RAM
+	ld hl, _VRAM
+	ld bc, $2000
+	ld a, $00
+	call MemSet
+	
+	ld hl, _RAM
+	ld bc, $2000
+	ld a, $00
+	call MemSet
+
+	; Put the stack in a sensible location
+	ld sp, $E000
+
+
+	ld hl, _OAMRAM
+	ld bc, $0100
+	ld a, $00
+	call MemSet
+
+	ld hl, _HRAM
+	ld bc, $007F
+	ld a, $00
+	call MemSet
+
+	ld hl, _SRAM
+	ld bc, $1C00
+	ld a, $00
+	call MemSet
+
+	xor a, a
+	ldh [rIF], a 
 	ld a, IEF_VBLANK | IEF_LCDC | IEF_TIMER
-	ld [rIE],a
-	ld a,$FF
-	ld [rTIMA],a
-	ld a,$BC
-	ld [rTMA],a
-	xor a
-	ld [rTAC],a
-	ld a,$40
-	ld [rSTAT],a
-	ld a,$FF
-	ld [rLYC],a
-	ld [$DA29],a
-	ld a,$1A
-	call ChangeBankAndHRAM
-	ld hl,Unknown_0x680E8
-	ld de,$FF88
-	ld bc,$000A
-	call LoadDataToRamInit
-	ld hl,$DA21
-	ld a,$02
-	ld [hld],a
-	ld [hl],$2B
-	xor a
-	ld [$DA1C],a
-	ld a,bank(UnknownForeignCall_0x78232)
-	ld hl,UnknownForeignCall_0x78232
-	call CallForeignBank
-	ld a,bank(UnknownForeignCall_0x1D7BC)
-	ld hl,UnknownForeignCall_0x1D7BC
-	call CallForeignBank
-	ld a,bank(UnknownForeignCall_0x1C01D)
-	ld hl,UnknownForeignCall_0x1C01D
-	call CallForeignBank
-	xor a
-	ld [rBGP],a
-	ld [$CD00],a ;Seems like the palletes are stored in RAM, most likely for fades
-	ld [rOBP0],a
-	ld [$CD01],a
-	ld [rOBP1],a
-	ld [$CD02],a
-	ld [rSCY],a
-	ld [rSCX],a
-	ld [rWY],a
-	ld [rWX],a
-	ld [$DA2B],a
-	ld a,$C0
-	ld [$DA08],a
-	ld a,$C2
-	ld [$DA28],a
-	ld a,$C3
-	ld [$DA10],a
-	ld hl,$0342
+	ldh [rIE], a
+	ld a, $FF
+	ldh [rTIMA], a
+	ld a, $BC
+	ldh [rTMA], a
+	xor a, a
+	ldh [rTAC], a
+	ld a, $40
+	ldh [rSTAT], a
+	ld a, $FF
+	ldh [rLYC], a
+	ld [$DA29], a
+
+	; This appears to be a mistake, but this data happens to be in the same bank.
+	ld a, BANK(Unknown_0x680E8)
+	call SwitchBankUnsafe
+
+	ld hl, Unknown_0x680E8
+	ld de, $FF88
+	ld bc, $000A
+	call MemCopy
+
+	ld hl, $DA21
+	ld a, $02
+	ld [hld], a
+	ld [hl], $2B
+	xor a, a
+	ld [$DA1C], a
+	ld a, BANK(UnknownForeignCall_0x78232)
+	ld hl, UnknownForeignCall_0x78232
+	call FarCallUnsafe
+	ld a, BANK(UnknownForeignCall_0x1D7BC)
+	ld hl, UnknownForeignCall_0x1D7BC
+	call FarCallUnsafe
+	ld a, BANK(UnknownForeignCall_0x1C01D)
+	ld hl, UnknownForeignCall_0x1C01D
+	call FarCallUnsafe
+	xor a, a
+	ldh [rBGP], a
+	ld [wBGPBuffer], a
+	ldh [rOBP0], a
+	ld [wOBP0Buffer], a
+	ldh [rOBP1], a
+	ld [wOBP1Buffer], a
+	ldh [rSCY], a
+	ldh [rSCX], a
+	ldh [rWY], a
+	ldh [rWX], a
+	ld [$DA2B], a
+	ld a, $C0
+	ld [$DA08], a
+	ld a, $C2
+	ld [$DA28], a
+	ld a, $C3
+	ld [$DA10], a
+	ld hl, $0342
 	call StoreHLToRam
-	ld hl,$DA13
-	ld a,$C3
-	ld [hli],a
-	ld a,$42
-	ld [hli],a
-	ld [hl],$03
-	ld hl,$DA16
-	ld a,$42
-	ld [hli],a
-	ld [hl],$03
+	ld hl, $DA13
+	ld a, $C3
+	ld [hli], a
+	ld a, $42
+	ld [hli], a
+	ld [hl], $03
+	ld hl, $DA16
+	ld a, $42
+	ld [hli], a
+	ld [hl], $03
 	ei
-	ld a,$04
-	ld [rTAC],a
+	ld a, $04
+	ldh [rTAC],a
 	jp Unknown_0x10DE
 
 Unknown_0x680E8:
@@ -369,7 +385,7 @@ Unknown_0x6836D:
 	ld e,$39
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
@@ -410,7 +426,7 @@ UnknownData_0x683B7:
 INCBIN "baserom.gb", $683B7, $683C2 - $683B7
 	ld hl,Unknown_0x692CE
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld bc,$437B
 	call Unknown_0x255B
@@ -594,7 +610,7 @@ Unknown_0x68596:
 Unknown_0x6859D:
 	ld hl,$7C7C
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$01
 	ld [$DD62],a
 	jr Unknown_0x68576
@@ -748,7 +764,7 @@ Unknown_0x6870D:
 	ld e,$41
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 
@@ -845,7 +861,7 @@ INCBIN "baserom.gb", $6883C, $6887A - $6883C
 	ld e,$0C
 	ld hl,$42AC
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	pop bc
 	ret
@@ -982,7 +998,7 @@ UnknownData_0x6A0CC:
 INCBIN "baserom.gb", $6A0CC, $6A128 - $6A0CC
 	ld hl,$7C7C
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld a,[$DB60]
 	call Unknown_0x0663
@@ -1494,7 +1510,7 @@ INCBIN "baserom.gb", $6AFDE, $6AFE1 - $6AFDE
 	call Unknown_0x10AA
 	ld hl,$7CD8
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DF23
 	inc [hl]
 	ld a,[$DB60]

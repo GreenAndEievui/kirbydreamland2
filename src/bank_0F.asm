@@ -161,7 +161,7 @@ Unknown_0x3C8B9:
 	ld e,$56
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	ld e,$0F
 	ld bc,Unknown_0x3C7F8
@@ -172,7 +172,7 @@ Unknown_0x3C8D4:
 	ld e,$2D
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	ld e,$0F
 	ld bc,Unknown_0x3C550
@@ -273,7 +273,7 @@ Unknown_0x3C94E:
 	ld e,$07
 	ld hl,$6035
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	pop de
 	ret
@@ -286,7 +286,7 @@ Unknown_0x3C94E:
 	ld e,[hl]
 	ld hl,$6035
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x3C980:
 	pop bc
@@ -416,7 +416,7 @@ Unknown_0x3DEB1:
 	jp Unknown_0x0846
 	ld hl,$741F
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0C91
 	call Unknown_0x0DA4
 	ld e,$10
@@ -497,7 +497,7 @@ Unknown_0x3DF39:
 	ld e,$11
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 
 Unknown_0x3DF58:
@@ -559,7 +559,7 @@ Unknown_0x3DF93:
 	ld e,$45
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	ld e,$0F
 	ld bc,$5D3D
@@ -806,7 +806,7 @@ Unknown_0x3E0F6:
 	ld e,$2D
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	ret
 
@@ -839,7 +839,7 @@ Unknown_0x3E169:
 	call Unknown_0x0496
 	ld hl,$086B
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x3E180
 	call Unknown_0x04AE
 	call Unknown_0x0343
@@ -922,7 +922,7 @@ Unknown_0x3E1F1:
 	ld de,$0B04
 	ld hl,Unknown_0x3C27B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld a,[$A051]
 	cp $0D
@@ -943,28 +943,28 @@ Unknown_0x3E217:
 Unknown_0x3E21B:
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3E22C:
 	ld de,$0B04
 	ld hl,Unknown_0x3C27B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld e,$09
 	ld hl,$602E
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1126
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1134
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$7F
 	ld [$FF00+$45],a
 	ld [$DA29],a
@@ -976,7 +976,7 @@ Unknown_0x3E22C:
 	push af
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop af
 	ld [$A05B],a
 	ld c,$04
@@ -991,13 +991,13 @@ Unknown_0x3E27B:
 	jr nz,Unknown_0x3E27B
 	ld hl,$14EE
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3C1DC
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3C0E2
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DB78
 	ld de,$CD09
 	ld a,[hli]
@@ -1014,26 +1014,26 @@ Unknown_0x3E27B:
 	call Unknown_0x046D
 	ld hl,Unknown_0x3C044
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$04
 	ld hl,Unknown_0x3C24E
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3E2C4:
 	ld e,$2A
 	ld hl,Unknown_0x3C299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$04
 	ld hl,Unknown_0x3C280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld hl,$1126
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3E399
 	ld de,$8700
 	call StoreDEToRAM
@@ -1049,7 +1049,7 @@ Unknown_0x3E2F7:
 	ld [$DF11],a
 	ld hl,$115F
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3E39E
 	ld de,$9000
 	call StoreDEToRAM
@@ -1087,10 +1087,10 @@ Unknown_0x3E31D:
 	ld e,$0F
 	ld hl,$6011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3C028
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$A7
 	ld h,$A0
 	call Unknown_0x07FC
@@ -1124,7 +1124,7 @@ Unknown_0x3E38A:
 	ld de,$0B04
 	ld hl,Unknown_0x3C246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3E399:
@@ -1165,7 +1165,7 @@ Unknown_0x3E8E2:
 	ld de,$0104
 	ld hl,Unknown_0x3C27B
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ret
 
@@ -1173,7 +1173,7 @@ Unknown_0x3E8FE:
 	call Unknown_0x0496
 	ld hl,$086B
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x04AE
 	call Unknown_0x0343
 	jp Unknown_0x0357
@@ -1633,17 +1633,17 @@ Unknown_0x3EDFD:
 Unknown_0x3EE0B:
 	ld hl,Unknown_0x3C000
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$10
 	ld hl,$6011
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3EE8C
 	ld de,$8000
 	call StoreDEToRAM
 	ld hl,$1150
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x3F05D
 	ld de,$9000
 	call StoreDEToRAM
@@ -1663,7 +1663,7 @@ Unknown_0x3EE0B:
 	ld e,$2E
 	ld hl,Unknown_0x3C232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$CD09
 	ld a,$E4
 	ld [hli],a
@@ -1680,7 +1680,7 @@ Unknown_0x3EE0B:
 	ld de,$0104
 	ld hl,Unknown_0x3C246
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x3EE8C:

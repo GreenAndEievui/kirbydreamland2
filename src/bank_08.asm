@@ -31,7 +31,7 @@ Unknown_0x20022:
 	ld hl,$A000
 	ld de,$DAE6
 	ld bc,$004D
-	call LoadDataToRamInit
+	call MemCopy
 	ld a,[$DA46]
 	ld [$DB33],a
 	ld a,$A0
@@ -42,7 +42,7 @@ Unknown_0x20022:
 	ld de,$A000
 	ld hl,$DAE6
 	ld bc,$004D
-	call LoadDataToRamInit
+	call MemCopy
 	ld a,[$DB33]
 	ld [$DA46],a
 	ret
@@ -59,28 +59,28 @@ Unknown_0x2005D:
 Unknown_0x20062:
 	ld hl,Unknown_0x21FE1
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x21F68
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	xor a
 	ld [$DEFF],a
 
 Unknown_0x20076:
 	ld hl,$7A2D
 	ld a,$10
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x2007E:
 	ld hl,$5FEE
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DEFF]
 	or a
 	jp nz,Unknown_0x203F3
 	ld hl,$68D2
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DF0A]
 	cp $FF
 	jr z,Unknown_0x2007E
@@ -100,14 +100,14 @@ Unknown_0x200B3:
 	ld e,$07
 	ld hl,Unknown_0x2206D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$32FF
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$00
 	ld hl,Unknown_0x2206D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x206EF
 	cp $FF
 	jr z,Unknown_0x200E8
@@ -116,17 +116,17 @@ Unknown_0x200B3:
 	ld e,a
 	ld hl,$2A2B
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$01
 	ld [$DB38],a
 
 Unknown_0x200E8:
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DB60]
 	ld hl,$4278
 	add a,a
@@ -146,7 +146,7 @@ Unknown_0x20107:
 Unknown_0x2010A:
 	ld hl,$11BE
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$A082]
 	dec a
 	ld hl,$4123
@@ -174,12 +174,12 @@ INCBIN "baserom.gb", $20128, $20135 - $20128
 	ld e,$00
 	ld hl,Unknown_0x2206D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x20149:
 	ld hl,$1220
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[hl]
 	cp $20
 	jp nc,Unknown_0x20107
@@ -189,13 +189,13 @@ Unknown_0x20149:
 	ld [$DB57],a
 	ld hl,$3212
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DB61]
 	ld e,a
 	ld a,[$DB60]
@@ -209,19 +209,19 @@ Unknown_0x20149:
 Unknown_0x2018D:
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x20195:
 	xor a
 	ld [$DB6E],a
 	ld hl,$4851
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x20107
 	ld e,$04
 	ld hl,Unknown_0x20280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld a,[$DF0A]
 	cp $04
@@ -235,20 +235,20 @@ Unknown_0x20195:
 	ld [$A084],a
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DEDE
 	set 2,[hl]
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$01
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$02
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DB36]
 	ld l,a
 	ld a,[$DB37]
@@ -260,30 +260,30 @@ Unknown_0x201FB:
 	ld [$A084],a
 	ld hl,$5A7C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$2A29
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DA2C]
 	cp $01
 	jp z,Unknown_0x2007E
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$4851
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x20107
 	ld e,$04
 	ld hl,Unknown_0x20280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld a,[$DB61]
 	cp $08
@@ -291,7 +291,7 @@ Unknown_0x201FB:
 	ld e,$00
 	ld hl,$606D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x200B3
 
 Unknown_0x2025C:
@@ -320,31 +320,31 @@ INCBIN "baserom.gb", $20280, $20286 - $20280
 	jp nz,Unknown_0x20473
 	ld hl,Unknown_0x22145
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DF04]
 	rra
 	jp nc,Unknown_0x2010A
 	ld hl,$79F4
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$4851
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x20107
 	ld e,$04
 	ld hl,$4280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld hl,$1126
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$79F4
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DF0A]
 	cp $05
 	jp z,Unknown_0x203BD
@@ -357,24 +357,24 @@ INCBIN "baserom.gb", $20280, $20286 - $20280
 	ld [$DB3C],a
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$4851
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x20107
 	ld e,$08
 	ld hl,Unknown_0x20280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	ld hl,$3C92
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x2007E
 	call Unknown_0x0437
 	ld hl,$4000
 	ld a,$19
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x2007E
 
 Unknown_0x2032C:
@@ -396,10 +396,10 @@ Unknown_0x2032C:
 	ld [$DD63],a
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jr Unknown_0x20370
 
 UnknownData_0x20363:
@@ -441,10 +441,10 @@ Unknown_0x2038C:
 	ld [$DB6A],a
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jr Unknown_0x203BD
 
 Unknown_0x203BD:
@@ -471,13 +471,13 @@ Unknown_0x203D7:
 Unknown_0x203DD:
 	ld hl,$6C52
 	ld a,$0E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x2007E
 
 Unknown_0x203E8:
 	ld hl,$655F
 	ld a,$0E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	jp Unknown_0x2007E
 
 Unknown_0x203F3:
@@ -486,7 +486,7 @@ Unknown_0x203F3:
 	ld e,$FF
 	ld hl,$4232
 	ld a,$1F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x2049B
 	ld a,[$DEFF]
 	dec a
@@ -518,10 +518,10 @@ Unknown_0x203F3:
 	ld [$DEE5],a
 	ld hl,$10E6
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$1166
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DEDE
 	set 6,[hl]
 	set 1,[hl]
@@ -551,7 +551,7 @@ Unknown_0x20473:
 	ld e,$04
 	ld hl,Unknown_0x20280
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0437
 	jp Unknown_0x20076
 
@@ -561,7 +561,7 @@ INCBIN "baserom.gb", $20487, $2049B - $20487
 Unknown_0x2049B:
 	ld hl,Unknown_0x21A7C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,$86
 	ld [$A083],a
 	call Unknown_0x206CB
@@ -571,14 +571,14 @@ Unknown_0x2049B:
 	ld hl,$DBD0
 	ld bc,$012C
 	ld a,$00
-	call LoadByteToRamInit
+	call MemSet
 	ld a,$D0
 	ld [$DCFD],a
 	ld a,$DB
 	ld [$DCFE],a
 	ld hl,$6D21
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x204D0:
@@ -604,7 +604,7 @@ Unknown_0x204D0:
 	ld [hli],a
 	ld hl,$4000
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop hl
 	ld a,l
 	ld [$DB36],a
@@ -708,19 +708,19 @@ Unknown_0x20565:
 	ld [$A009],a
 	ld hl,$1286
 	ld a,$00
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$473A
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$41DC
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$4584
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$43A0
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$A07F]
 	cp $02
 	jr nz,Unknown_0x205E0
@@ -744,13 +744,13 @@ Unknown_0x205E0:
 Unknown_0x205F4:
 	ld hl,$4105
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,Unknown_0x20128
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$40E2
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DB78
 	ld de,$CD09
 	ld a,[hli]
@@ -780,7 +780,7 @@ Unknown_0x2063C:
 	ld e,$04
 	ld hl,$424E
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 Unknown_0x20647:
@@ -799,11 +799,11 @@ Unknown_0x20650:
 	ld e,$01
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$02
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$DB3B]
 	ld b,a
 	ld a,[$DB60]
@@ -813,11 +813,11 @@ Unknown_0x20650:
 	ld e,$00
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$03
 	ld hl,$459C
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x20690:
 	pop hl
@@ -860,7 +860,7 @@ Unknown_0x206B8:
 Unknown_0x206CB:
 	ld hl,$4057
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld hl,$DEDF
 	res 1,[hl]
 	ld a,$0C
@@ -1887,15 +1887,15 @@ Unknown_0x21A3E:
 	ld e,$2D
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$00
 	ld hl,Unknown_0x2206D
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld de,$0004
 	ld hl,$42A4
 	ld a,$1A
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld a,[$FF00+$9A]
 	ld d,a
 	ld e,$08
@@ -1940,10 +1940,10 @@ Unknown_0x21EA9:
 	ld h,[hl]
 	ld l,a
 	ld de,$BC00
-	call LoadDataToRamInit
+	call MemCopy
 	ld hl,$4000
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x21EBF:
@@ -1973,7 +1973,7 @@ INCBIN "baserom.gb", $21EE0, $21F18 - $21EE0
 	pop de
 	ld hl,$40DA
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$08
 	ld bc,Unknown_0x21FCD
 	jp Unknown_0x0846
@@ -2125,7 +2125,7 @@ INCBIN "baserom.gb", $22145, $2215B - $22145
 	jr c,Unknown_0x22172
 	ld hl,$7012
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x22172:
 	ld e,$08
@@ -2138,13 +2138,13 @@ Unknown_0x22172:
 	jr c,Unknown_0x22186
 	ld hl,$7067
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 
 Unknown_0x22186:
 	call Unknown_0x22097
 	ld hl,$741F
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	jp Unknown_0x34FD
 
@@ -2152,7 +2152,7 @@ UnknownData_0x22195:
 INCBIN "baserom.gb", $22195, $221FC - $22195
 	ld hl,$77ED
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x22205:
@@ -2160,14 +2160,14 @@ INCBIN "baserom.gb", $22205, $2226B - $22205
 	push bc
 	ld hl,Unknown_0x20128
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
 	ret
 	ld hl,$70BC
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x22282:
@@ -2207,7 +2207,7 @@ INCBIN "baserom.gb", $22410, $2256F - $22410
 	ld [$DF11],a
 	ld hl,$748B
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld a,[$A071]
 	or a
@@ -2226,11 +2226,11 @@ Unknown_0x22590:
 	ld [$DF11],a
 	ld hl,$748B
 	ld a,$07
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld hl,$40DA
 	ld a,$01
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 	ld a,[$DB60]
 	sub $06
@@ -2287,7 +2287,7 @@ Unknown_0x22D18:
 	push bc
 	ld hl,$6D6C
 	ld a,$0F
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop bc
 	ld a,[$FF00+$9A]
 	ld d,a
@@ -3643,7 +3643,7 @@ Unknown_0x234D3:
 	ld e,$45
 	ld hl,$4299
 	ld a,$1E
-	call CallForeignBankNoInturrupts
+	call FarCall
 	pop de
 	pop hl
 	ret
@@ -3714,7 +3714,7 @@ Unknown_0x235CD:
 	call Unknown_0x0D35
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x235B5
 	ret c
 	call Unknown_0x235C8
@@ -3752,7 +3752,7 @@ Unknown_0x236CE:
 Unknown_0x236D1:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x235AE
 	ld e,$45
 	ld a,[de]
@@ -3804,7 +3804,7 @@ Unknown_0x237B6:
 Unknown_0x237B9:
 	ld hl,$6E10
 	ld a,$08
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld e,$11
 	ld a,[de]
 	or a

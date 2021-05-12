@@ -292,11 +292,11 @@ INCBIN "baserom.gb", $3888B, $388A8 - $3888B
 	ret nz
 	ld hl,$6B9D
 	ld a,$1D
-	call CallForeignBankNoInturrupts
+	call FarCall
 	call Unknown_0x0C71
 	ld hl,$6B86
 	ld a,$1D
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ld h,d
 	ld l,$60
 	ld [hl],$3F
@@ -361,7 +361,7 @@ INCBIN "baserom.gb", $3890D, $3891B - $3890D
 	ret
 	ld hl,$4CE4
 	ld a,$03
-	call CallForeignBankNoInturrupts
+	call FarCall
 	ret
 
 UnknownData_0x3892C:
